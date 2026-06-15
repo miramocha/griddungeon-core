@@ -1,0 +1,28 @@
+---
+description: Format C# with CSharpier before agent-created commits
+alwaysApply: true
+---
+
+# Pre-commit CSharpier format
+
+When user asks to **create a commit** and commit includes `.cs` changes:
+
+1. `git status`, `git diff` — list every `.cs` path (staged + unstaged)
+2. If no `.cs` in commit scope, skip formatting
+3. From repo root:
+
+   ```powershell
+   dotnet tool restore
+   dotnet csharpier format path/to/File.cs
+   ```
+
+   Format **changed paths only** unless user asked for full repo format.
+
+4. Re-check `git diff`; include formatting-only changes in commit unless user excludes them
+
+Skill: `.cursor/skills/csharpier-format/SKILL.md`
+
+## Exceptions
+
+- User requests commit without formatting
+- Commit is docs/CI only (no `.cs`)

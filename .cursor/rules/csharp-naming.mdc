@@ -1,0 +1,33 @@
+---
+description: C# naming — aligned with griddungeon-game
+globs: "**/*.cs"
+alwaysApply: false
+---
+
+# C# naming
+
+Match [griddungeon-game](https://github.com/miramocha/griddungeon-game) conventions.
+
+## Conventions
+
+| Kind | Pattern | Example |
+|---|---|---|
+| Types | PascalCase | `DamageCalculator` |
+| Interfaces | `I` + PascalCase | `IMazeGenerator` |
+| Private fields | `m_` + camelCase | `m_health` |
+| Static fields | `s_` + camelCase | `s_registry` |
+| Constants | `k_` + PascalCase | `k_MaxHp` |
+| Parameters, locals | camelCase | `targetPosition` |
+| Booleans | verb prefix | `isDead`, `hasKey` |
+| Methods | verb phrase | `CalculateDamage` |
+| Namespaces | PascalCase; mirror folders | `GridDungeon.Core.Simulators` |
+
+## Files
+
+One primary type per file; filename = type name (`DamageCalculator.cs`).
+
+## Do not
+
+- `snake_case` for C# identifiers
+- Public fields for DTO state (use properties)
+- Abbreviations except loop indices (`i`, `j`)

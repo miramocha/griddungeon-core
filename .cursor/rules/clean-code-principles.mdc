@@ -1,0 +1,30 @@
+---
+description: Clean code — SRP, DRY, KISS, YAGNI
+alwaysApply: true
+---
+
+# Clean code principles
+
+Applies to `src/` simulators and DTOs. Complements `csharp-naming`, `csharp-formatting`, `core-boundaries`.
+
+## Single responsibility
+
+One reason to change per class/method. Split simulators by domain (damage, reveal, retreat) — not one `GameRules` god type.
+
+## DRY
+
+One formula, one owner in Core. Runtime/UI read computed state — do not duplicate combat math for display.
+
+**Rule of three** before abstracting.
+
+## KISS / YAGNI
+
+No generic framework for one call site. Smallest correct simulator wins.
+
+## Fix causes
+
+Trace why bad state exists before null-guards at call sites.
+
+## Consistency
+
+Match existing `src/` patterns in the folder you touch. Mirror stays aligned with game Core — do not invent divergent style here.

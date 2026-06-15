@@ -1,0 +1,28 @@
+---
+description: Post-commit independent C# review via fresh-reviewer subagent
+alwaysApply: true
+---
+
+# Post-commit C# code review
+
+When user asks to **create a commit** and commit includes `.cs`:
+
+1. Format per `pre-commit-csharpier-format.mdc`
+2. `git commit`
+3. Review **after** commit succeeds — `git show HEAD`
+4. Launch **fresh-reviewer** subagent (`readonly: true`) with:
+   - Changed `.cs` paths + diff summary
+   - Applicable `.cursor/rules/` for touched areas
+   - **No** implementer chat history in prompt
+5. Report Blocker / Should fix / Nit
+6. Fix Blockers in follow-up commit unless user approves
+
+## Scope notes
+
+- Large **sync-only** commits (149 files from export): review `SYNC_STAMP.json`, unexpected edits outside `src/`, build breakers — not line-by-line every mirrored file
+- **Hand-edited** `src/` (discouraged): full review; remind user to move change to game repo
+
+## Exceptions
+
+- User requests skip review
+- Commit has no `.cs`

@@ -1,0 +1,37 @@
+---
+description: griddungeon-core is a read-only mirror — edit game repo, then sync
+alwaysApply: true
+---
+
+# Mirror source of truth
+
+**griddungeon-game** `Assets/Scripts/Core/` is canonical. **griddungeon-core** `src/` is an export snapshot.
+
+## Edit where
+
+| Change type | Repo | Then |
+|---|---|---|
+| Simulators, DTOs, save shapes, maze gen, Core rules | **griddungeon-game** `Assets/Scripts/Core/` | Run `./scripts/sync-from-game.ps1` here |
+| `.csproj`, CI, README, Cursor config, sync script | **griddungeon-core** | Commit in this repo only |
+| Campaign/story behavior, Unity Runtime/UI | **griddungeon-game** `Campaign/` / `Runtime/` | Out of mirror scope |
+
+## Do not
+
+- Implement new game rules **only** under `src/` in this repo (drifts from game; next sync overwrites or diverges).
+- Add `.meta`, `.asmdef`, `UnityEngine`, or `MonoBehaviour` to `src/`.
+- Run sync scripts that **write** into griddungeon-game from this repo.
+
+## Sync workflow
+
+1. Merge Core change in game repo.
+2. From **this repo** root: `./scripts/sync-from-game.ps1`
+3. `dotnet build -c Release`
+4. Commit mirror: `sync: mirror Core from griddungeon-game @ <sha>`
+
+Skill: `.cursor/skills/sync-from-game/SKILL.md`.
+
+## Agent default
+
+When user asks to **add/fix Core logic**: implement in **griddungeon-game** (unless user explicitly scopes mirror-only scaffolding). Remind to sync after game merge.
+
+When user asks to **update mirror** or **sync**: run `sync-from-game.ps1` only — no game repo edits.

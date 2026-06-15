@@ -1,0 +1,33 @@
+---
+description: Git commit workflow for agent-created commits
+alwaysApply: true
+---
+
+# Git commit workflow (agent)
+
+When user asks to **create a commit** or **commit and push**: format → commit → review.
+
+## Git safety
+
+- NEVER update git config
+- NEVER destructive git (force push, hard reset) unless user explicitly requests
+- NEVER skip hooks unless user explicitly requests
+- NEVER force push to main/master
+- Avoid `git commit --amend` unless user requested, HEAD is yours and unpushed, hook did not reject
+- If commit FAILED or hook rejected → **new** commit, do not amend
+- NEVER commit unless user asked; do not push unless user asked
+- No interactive git (`-i`)
+
+## Workflow
+
+1. `git status`, `git diff`, `git log -3 --oneline`
+2. Draft commit message (why, not just what)
+3. Format changed `.cs` per `pre-commit-csharpier-format.mdc`
+4. `git add` → `git commit`
+5. Post-commit review per `post-commit-csharp-code-review.mdc`
+6. Fix Blockers in follow-up commit unless user approves shipping with them noted
+7. Push only when user asked
+
+## Sync commits
+
+Prefer message shape: `sync: mirror Core from griddungeon-game @ <short-sha>`

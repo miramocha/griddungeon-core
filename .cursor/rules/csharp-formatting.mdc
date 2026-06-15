@@ -1,0 +1,36 @@
+---
+description: C# formatting — Allman braces, 4 spaces (CSharpier + .editorconfig)
+globs: "**/*.cs"
+alwaysApply: false
+---
+
+# C# formatting
+
+Team formatter: **CSharpier** (`.config/dotnet-tools.json`). Style from `.editorconfig`.
+
+## Braces
+
+**Allman** — opening `{` on its own line. **Never omit braces** on `if`/`for`/`while`.
+
+## Class member order
+
+1. Fields (`k_`, `s_`, `m_`)
+2. Properties
+3. Events
+4. Public methods
+5. Private methods
+
+## Spacing
+
+- Space after keywords: `if (x == 0)`
+- No space before call parens: `Foo(arg)`
+- Line width ~80–120; break long argument lists
+
+## Format before commit
+
+```powershell
+dotnet tool restore
+dotnet csharpier format path/to/File.cs
+```
+
+See `pre-commit-csharpier-format.mdc`.

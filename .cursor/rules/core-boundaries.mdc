@@ -1,0 +1,47 @@
+---
+description: GridDungeon.Core boundaries — simulators and DTOs only (mirror of game asmdef)
+alwaysApply: true
+---
+
+# Core boundaries
+
+This mirror reflects **GridDungeon.Core** from the game repo. Authority: [core assembly improvement plan](https://github.com/miramocha/griddungeon-design-docs/blob/main/docs/plans/core-assembly-improvement-plan.md), [05-class-design](https://github.com/miramocha/griddungeon-design-docs/blob/main/docs/05-class-design.md).
+
+## Dependency (game repo)
+
+```
+GridDungeon.Campaign  →  GridDungeon.Core
+GridDungeon.Runtime     →  Core + Campaign
+GridDungeon.Core        →  (none)
+```
+
+This mirror ships **Core only** — no Campaign or Runtime assemblies.
+
+## Core owns
+
+| Area | Examples in `src/` |
+|---|---|
+| Simulators / formulas | `DamageCalculator`, `MapRevealCalculator`, `TurnQueueBuilder` |
+| Neutral models & DTOs | `ExplorationTarget`, `FloorExitLink`, combat models |
+| Story **data shapes** | `StoryEventDefinitionData`, effect/step DTOs |
+| Save schema | `SaveGame`, `CampaignSaveData`, mappers |
+| Maze generation | `WilsonsMazeGenerator`, transmuters, `MazeGrid` |
+| Generic hub rules | `GuildPartyRules` (slot count — no campaign flag writes) |
+
+## Not in Core (game repo elsewhere)
+
+| Smell | Put in game repo |
+|---|---|
+| Story executors, trigger catalogs, `switch (storyEventId)` | `GridDungeon.Campaign` |
+| S1 resolvers, floor keys, tutorial policy | `Campaign/` |
+| `MonoBehaviour`, ScriptableObject, UITK | `Runtime/` / `UI/` |
+| JsonUtility file I/O | Runtime `SaveSystem` |
+
+## PR / agent checklist (when editing game Core)
+
+1. Stratum- or story-specific? → `Campaign/`, not Core.
+2. Only a data shape? → DTO in Core; behavior in Campaign or Runtime.
+3. Would a second stratum duplicate constants? → Campaign policy.
+4. New `using` to Campaign/Runtime from Core? → Stop — refactor.
+
+After game Core merge → sync this mirror.

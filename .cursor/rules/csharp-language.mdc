@@ -1,0 +1,50 @@
+---
+description: C# 9 language subset — matches griddungeon-game Unity 6 compile surface
+globs: "**/*.cs"
+alwaysApply: true
+---
+
+# C# language subset (Unity parity)
+
+Synced `src/` must compile in **griddungeon-game** (Unity 6, C# 9). Keep this mirror on the same subset even when `dotnet build` allows newer syntax.
+
+**Authority:** [Unity 6 C# compiler](https://docs.unity3d.com/6000.4/Documentation/Manual/csharp-compiler.html)
+
+## Never use `init` accessors
+
+Unity fails with `CS0518` without `IsExternalInit`. Use `{ get; set; }`, constructor, or factory.
+
+```csharp
+// ❌ BAD
+public bool ShowCombatAction { get; init; }
+
+// ✅ GOOD
+public bool ShowCombatAction { get; set; }
+```
+
+## Avoid in `src/`
+
+| Feature | Use instead |
+|---|---|
+| `record` / `record struct` | `sealed class` / `struct` DTOs |
+| `required` members | Constructor validation |
+| File-scoped namespaces | Block `namespace { }` |
+| C# 10+ features in synced code | C# 9 equivalents |
+
+## DTOs
+
+```csharp
+public sealed class ProtocolResolveResult
+{
+    public IReadOnlyList<CombatActionResult> TargetResults { get; set; } =
+        Array.Empty<CombatActionResult>();
+}
+```
+
+## Nullable
+
+Nullable reference types enabled (`Directory.Build.props`). Match game repo annotations.
+
+## Tests (future `tests/` project)
+
+Same subset unless team explicitly bumps Unity lang version in game repo first.
