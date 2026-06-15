@@ -4,6 +4,35 @@ Pure C# maze generation and post-processing for GridDungeon floors. Algorithms a
 
 Namespace: `GridDungeon.Core.MapGeneration`
 
+## Architecture
+
+```mermaid
+flowchart TB
+    subgraph params [Parameters]
+        GP[MazeGenerationParams]
+        TP[MazeTransmutationParams]
+    end
+
+    subgraph registries [Registries]
+        GR[MazeGeneratorRegistry]
+        TR[MazeTransmuterRegistry]
+    end
+
+    subgraph contracts [Contracts]
+        IG[IMazeGenerator]
+        IT[IMazeTransmuter]
+    end
+
+    GP --> GR
+    GR --> IG
+    IG --> MG[MazeGrid]
+    TP --> TR
+    MG --> TR
+    TR --> IT
+    IT --> MG2[MazeGrid in place]
+    MG2 --> OUT[MazeGridToAsciiConverter / cell reads]
+```
+
 ## Quick start
 
 Generate a deterministic maze, optionally transmute it, then export ASCII for the floor editor or tests:
@@ -43,15 +72,27 @@ Requirements:
 
 ## Pipeline
 
-```text
-MazeGenerationParams  →  MazeGeneratorRegistry.Generate  →  MazeGrid
-                                                                    ↓
-MazeTransmutationParams →  MazeTransmuterRegistry.Transmute  →  MazeGrid (in place)
-                                                                    ↓
-                         MazeGridToAsciiConverter / direct cell reads
+```mermaid
+flowchart TD
+    A[MazeGenerationParams] --> B[MazeGeneratorRegistry.Generate]
+    B --> C[MazeGrid]
+    D[MazeTransmutationParams] --> E[MazeTransmuterRegistry.Transmute]
+    C --> E
+    E --> F[MazeGrid updated in place]
+    F --> G{Output}
+    G --> H[MazeGridToAsciiConverter]
+    G --> I[GetCell / SetCell / IsWall]
 ```
 
-Transmuters modify the grid **in place**. Run them in the order you want (e.g. dead-end fill, then perturbation).
+Transmuters modify the grid **in place**. Chain multiple transmuters in the order you want:
+
+```mermaid
+flowchart LR
+    G[MazeGrid] --> T1[DeadEndFiller]
+    T1 --> T2[CuldeSacFiller]
+    T2 --> T3[Perturbation]
+    T3 --> Done[Final grid]
+```
 
 ## Grid model
 
@@ -69,14 +110,35 @@ Transmuters modify the grid **in place**. Run them in the order you want (e.g. d
 - **Y = 0 is the south edge**; Y increases toward the north.
 - ASCII export/import uses **north-up** rows: row 0 is the north edge, matching floor editor authoring.
 
+```mermaid
+flowchart TB
+    subgraph grid ["MazeGrid (Y axis)"]
+        direction TB
+        YN["Y = Height − 1 · north edge"]
+        Y0["Y = 0 · south edge"]
+    end
+
+    subgraph ascii ["ASCII rows (north-up)"]
+        direction TB
+        R0["row 0 · north edge"]
+        RN["row Height − 1 · south edge"]
+    end
+
+    YN --- R0
+    Y0 --- RN
+```
+
 ### Grid sizing
 
 Physical dimensions follow mazelib:
 
-```text
-PhysicalWidth  = 2 × HallwayWidth  + 1
-PhysicalHeight = 2 × HallwayHeight + 1
+```mermaid
+flowchart LR
+    W["HallwayWidth (w)"] --> PW["PhysicalWidth = 2w + 1"]
+    H["HallwayHeight (h)"] --> PH["PhysicalHeight = 2h + 1"]
 ```
+
+Hallway cells sit on odd coordinates; walls fill the even grid between them. `MazeGridSizing.TryGetLargestHallwayDimensionsForTargetPhysical` picks the largest `(w, h)` that fits a target floor bitmap.
 
 Use `MazeGridSizing` to convert between hallway counts and physical size, or to fit a maze inside a target floor:
 
@@ -158,7 +220,18 @@ All parameters live on `MazeGenerationParams`. Unused fields are ignored by algo
 
 ## Transmuters
 
-Post-process an existing `MazeGrid` via `MazeTransmuterRegistry.Transmute(grid, params)`.
+Post-process an existing `MazeGrid` via `MazeTransmuterRegistry.Transmute(grid, params)`:
+
+```mermaid
+flowchart LR
+    Grid[MazeGrid] --> Registry[MazeTransmuterRegistry]
+    Registry --> D[DeadEndFiller]
+    Registry --> C[CuldeSacFiller]
+    Registry --> P[Perturbation]
+    D --> Grid
+    C --> Grid
+    P --> Grid
+```
 
 | Id constant | `TransmuterId` string | Effect |
 |---|---|---|
@@ -221,6 +294,16 @@ Built-in algorithms register in static constructors on first use of each registr
 In Unity, static state resets on domain reload. Game/Editor code that relies on the registries should re-register custom entries after reload, e.g. with `[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]` (see comment on `MazeGeneratorRegistry`).
 
 ## Extending the library
+
+```mermaid
+flowchart LR
+    Game["griddungeon-game<br/>Assets/Scripts/Core/MapGeneration"]
+    Sync["sync-from-game.ps1"]
+    Mirror["griddungeon-core src/MapGeneration"]
+    Build["dotnet build"]
+
+    Game --> Sync --> Mirror --> Build
+```
 
 New algorithms belong in **griddungeon-game** `Assets/Scripts/Core/MapGeneration/`, then sync to this mirror:
 
