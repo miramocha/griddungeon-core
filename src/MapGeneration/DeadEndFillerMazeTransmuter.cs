@@ -6,9 +6,6 @@ namespace GridDungeon.Core.MapGeneration
     {
         public string TransmuterId => MazeTransmuterIds.DeadEndFiller;
 
-        public void Transmute(MazeGrid grid, MazeTransmutationParams parameters) =>
-            base.Transmute(grid, parameters);
-
         protected override void TransmuteCore()
         {
             int? startX = Parameters.StartX;

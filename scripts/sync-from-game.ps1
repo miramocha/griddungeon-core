@@ -104,7 +104,6 @@ $stamp = [ordered]@{
     syncedAtUtc = (Get-Date).ToUniversalTime().ToString("o")
     sourceRepo  = "griddungeon-game"
     sourcePath  = "Assets/Scripts/Core"
-    gameRepoRoot = (Resolve-Path $GameRepoRoot).Path
     gameCommit  = $gameHead
     gameBranch  = $gameBranch
     fileCount   = $sourceFiles.Count
@@ -112,7 +111,8 @@ $stamp = [ordered]@{
     removed     = $removed
 }
 $stampPath = Join-Path $MirrorRoot "SYNC_STAMP.json"
-$stamp | ConvertTo-Json -Depth 4 | Set-Content -Path $stampPath -Encoding UTF8
+$stampJson = ($stamp | ConvertTo-Json -Depth 4) + [Environment]::NewLine
+[System.IO.File]::WriteAllText($stampPath, $stampJson, [System.Text.UTF8Encoding]::new($false))
 
 Write-Host "Copied: $copied  Removed stale: $removed"
 Write-Host "Stamp:  $stampPath"

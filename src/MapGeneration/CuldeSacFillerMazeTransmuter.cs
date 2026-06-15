@@ -6,9 +6,6 @@ namespace GridDungeon.Core.MapGeneration
     {
         public string TransmuterId => MazeTransmuterIds.CuldeSacFiller;
 
-        public void Transmute(MazeGrid grid, MazeTransmutationParams parameters) =>
-            base.Transmute(grid, parameters);
-
         protected override void TransmuteCore()
         {
             for (int y = 1; y < Grid.Height; y += 2)

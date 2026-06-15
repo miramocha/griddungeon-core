@@ -9,9 +9,6 @@ namespace GridDungeon.Core.MapGeneration
     {
         public string TransmuterId => MazeTransmuterIds.Perturbation;
 
-        public void Transmute(MazeGrid grid, MazeTransmutationParams parameters) =>
-            base.Transmute(grid, parameters);
-
         protected override void TransmuteCore()
         {
             int repeat = Math.Max(1, Parameters.PerturbationRepeat);

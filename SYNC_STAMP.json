@@ -1,8 +1,7 @@
-﻿{
-    "syncedAtUtc":  "2026-06-15T08:46:45.6111686Z",
+{
+    "syncedAtUtc":  "2026-06-15T08:54:31.3827424Z",
     "sourceRepo":  "griddungeon-game",
     "sourcePath":  "Assets/Scripts/Core",
-    "gameRepoRoot":  "D:\\MiraGameDev\\griddungeon-game",
     "gameCommit":  "3f15c7fc3a60d0407b575c0ff27ac6e0abd89327",
     "gameBranch":  "main",
     "fileCount":  149,

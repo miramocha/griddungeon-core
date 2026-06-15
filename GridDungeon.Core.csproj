@@ -5,6 +5,8 @@
     <AssemblyName>GridDungeon.Core</AssemblyName>
     <Description>Pure C# rules engine and DTOs mirrored from griddungeon-game Assets/Scripts/Core.</Description>
     <Authors>miramocha</Authors>
+    <PackageId>GridDungeon.Core</PackageId>
+    <Version>0.0.1</Version>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
